@@ -57,7 +57,7 @@ public class UsersServices {
     public UsersResponseTO update(UUID userId, UsersRequestTO request) {
         var userById = usersRepository.findById(userId);
         if (userById.isEmpty()) {
-            throw new FlowException("User " + request.name() + " not found.", HttpStatus.BAD_REQUEST);
+            throw new FlowException("User " + request.name() + " not found.", HttpStatus.NOT_FOUND);
         }
         var userByEmail = usersRepository.findByEmail(request.email().toLowerCase());
         if (userByEmail.isPresent() && !userByEmail.get().getUserId().equals(userId)) {
@@ -134,5 +134,13 @@ public class UsersServices {
 
     private List<UsersResponseTO> buildGetUsersResponse(List<Users> users) {
         return users.stream().map(usersMapper::toResponse).toList();
+    }
+
+    public void delete(UUID userId) {
+        var userById = usersRepository.findById(userId);
+        if (userById.isEmpty()) {
+            throw new FlowException("Id " + userId + " not found.", HttpStatus.NOT_FOUND);
+        }
+        usersRepository.deleteById(userId);
     }
 }

@@ -8,6 +8,7 @@ import br.com.api.passit.to.UsersResponseTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,5 +43,11 @@ public class UsersController {
     public ResponseEntity<GetUsersResponseTO> get(@ModelAttribute GetUsersRequestTO request) {
         var response = usersServices.get(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> delete(@PathVariable UUID userId) {
+        usersServices.delete(userId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted successfully");
     }
 }

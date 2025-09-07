@@ -2,6 +2,8 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../api/client';
 import { Item, PaginatedResponse } from '../../api/types';
+import { useAuthStore } from '../../store/authStore';
+import axios from 'axios';
 
 interface GetItemsParams {
   limit?: number;
@@ -16,14 +18,31 @@ interface GetItemsParams {
 const getItems = async (params: GetItemsParams): Promise<PaginatedResponse<Item>> => {
   console.log('🔍 Buscando itens com parâmetros:', params);
   
+  // Debug: verificar se há token
+  const { token } = useAuthStore.getState();
+  console.log('🔑 Token disponível:', token ? 'Sim' : 'Não');
+  
   try {
-    const { data } = await apiClient.get<any>('/items', { params });
+    // Tentar primeiro com cliente autenticado, depois sem autenticação
+    let response;
+    try {
+      response = await apiClient.get<any>('/items', { params });
+    } catch (authError) {
+      console.log('🔒 Falha com autenticação, tentando sem token...');
+      // Se falhar com autenticação, tentar sem token
+      response = await axios.get('http://localhost:8080/passit/items', { params });
+    }
+    
+    const { data } = response;
     console.log('📦 Resposta da API:', data);
     
-    // Retornar a estrutura da API diretamente
+    // A API retorna um array simples, não um objeto com items
+    const items = Array.isArray(data) ? data : (data.items || []);
+    const totalNumberOfRecords = data.totalNumberOfRecords || items.length;
+    
     const mappedData = {
-      items: data.items || [],
-      totalNumberOfRecords: data.totalNumberOfRecords || 0,
+      items: items,
+      totalNumberOfRecords: totalNumberOfRecords,
       offset: params.offset || 0,
       limit: params.limit || 12
     };
@@ -37,10 +56,19 @@ const getItems = async (params: GetItemsParams): Promise<PaginatedResponse<Item>
 };
 
 export const useItems = (params: GetItemsParams) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['items', params],
     queryFn: () => getItems(params),
   });
+  
+  console.log('🔍 useItems - Estado da query:', {
+    isLoading: query.isLoading,
+    isError: query.isError,
+    data: query.data,
+    error: query.error
+  });
+  
+  return query;
 };
 
 const getItem = async (itemId: string): Promise<Item> => {

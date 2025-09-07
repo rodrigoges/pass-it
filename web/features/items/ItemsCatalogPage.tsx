@@ -29,6 +29,8 @@ const ItemsCatalogPage: React.FC = () => {
   // Debug logs
   console.log('🎯 ItemsCatalogPage - Estado:', { data, isLoading, isError });
   console.log('🎯 ItemsCatalogPage - Filtros:', filters);
+  console.log('🎯 ItemsCatalogPage - data?.items:', data?.items);
+  console.log('🎯 ItemsCatalogPage - data?.items?.length:', data?.items?.length);
 
   const handleFilterChange = (key: string, value: string) => {
     setSearchParams(prev => {
@@ -70,6 +72,7 @@ const ItemsCatalogPage: React.FC = () => {
             <option key={ItemStatus.RESERVED} value={ItemStatus.RESERVED}>Reservado</option>
         </select>
       </div>
+
 
       {isLoading && <Spinner />}
       

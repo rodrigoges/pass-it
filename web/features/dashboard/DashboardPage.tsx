@@ -9,7 +9,12 @@ const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();
   
   // Example data fetching - replace with real requisition/user counts later
-  const { data: itemsData, isLoading: isLoadingItems } = useItems({ limit: 5 });
+  const { data: itemsData, isLoading: isLoadingItems } = useItems({ 
+    limit: 5, 
+    offset: 0, 
+    sort: 'TITLE', 
+    order: 'ASC' 
+  });
 
   if (!user) {
     return <p>Carregando...</p>;
@@ -54,8 +59,8 @@ const DashboardPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {itemsData?.data.map((item) => (
-                    <tr key={item.id}>
+                  {itemsData?.items.map((item, index) => (
+                    <tr key={index}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.title}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.category}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.status}</td>

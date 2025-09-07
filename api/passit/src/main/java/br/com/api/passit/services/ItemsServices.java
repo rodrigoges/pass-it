@@ -135,4 +135,17 @@ public class ItemsServices {
                 .orElseThrow(() -> new FlowException("Item not found.", HttpStatus.NOT_FOUND));
         return itemsMapper.toResponse(item);
     }
+
+    public void delete(UUID itemId, UUID userId) {
+        var userById = usersRepository.findById(userId);
+        if (userById.isEmpty()) {
+            throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
+        }
+        var itemFounded = itemsRepository.findById(itemId)
+                .orElseThrow(() -> new FlowException("Item not found.", HttpStatus.NOT_FOUND));
+        if (!itemFounded.getUser().getUserId().equals(userId)) {
+            throw new FlowException("User not allowed.", HttpStatus.CONFLICT);
+        }
+        itemsRepository.deleteById(itemId);
+    }
 }

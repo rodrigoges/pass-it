@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,5 +54,11 @@ public class ItemsController {
     public ResponseEntity<ItemsResponseTO> getById(@PathVariable UUID itemId, @AuthenticationPrincipal Users authUser) {
         var response = itemsServices.getById(itemId, authUser.getUserId());
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<String> delete(@PathVariable UUID itemId, @AuthenticationPrincipal Users authUser) {
+        itemsServices.delete(itemId, authUser.getUserId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Item deleted successfully");
     }
 }

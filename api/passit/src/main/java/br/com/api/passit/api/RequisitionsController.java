@@ -2,8 +2,6 @@ package br.com.api.passit.api;
 
 import br.com.api.passit.db.Users;
 import br.com.api.passit.services.RequisitionsServices;
-import br.com.api.passit.to.ItemsRequestTO;
-import br.com.api.passit.to.ItemsResponseTO;
 import br.com.api.passit.to.RequisitionsRequestTO;
 import br.com.api.passit.to.RequisitionsResponseTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +29,12 @@ public class RequisitionsController {
                                                          @AuthenticationPrincipal Users authUser) {
         var response = requisitionsServices.request(request, authUser.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/{requisitionId}")
+    public ResponseEntity<RequisitionsResponseTO> donate(@PathVariable UUID requisitionId,
+                                                         @AuthenticationPrincipal Users authUser) {
+        var response = requisitionsServices.donate(requisitionId, authUser.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

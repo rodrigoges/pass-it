@@ -2,6 +2,7 @@ package br.com.api.passit.services;
 
 import br.com.api.passit.db.ItemsRepository;
 import br.com.api.passit.db.RequisitionsRepository;
+import br.com.api.passit.db.StatusItemEnum;
 import br.com.api.passit.db.UsersRepository;
 import br.com.api.passit.exceptions.FlowException;
 import br.com.api.passit.mappers.RequisitionsMapper;
@@ -38,6 +39,28 @@ public class RequisitionsServices {
         }
         var requisitionEntity = requisitionsMapper.toEntity(request);
         var requisitions = requisitionsRepository.save(requisitionEntity);
+        return requisitionsMapper.toResponse(requisitions);
+    }
+
+    public RequisitionsResponseTO donate(UUID requisitionId, UUID userId) {
+        var userById = usersRepository.findById(userId);
+        if (userById.isEmpty()) {
+            throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
+        }
+        var request = requisitionsRepository.findById(requisitionId)
+                .orElseThrow(() -> new FlowException("Requisition not found.", HttpStatus.NOT_FOUND));
+        var requesterById = usersRepository.findById(request.getRequester());
+        if (requesterById.isEmpty()) {
+            throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
+        }
+        var itemFounded = itemsRepository.findById(request.getItem())
+                .orElseThrow(() -> new FlowException("Item not found.", HttpStatus.NOT_FOUND));
+        if (!itemFounded.getUser().getUserId().equals(userId)) {
+            throw new FlowException("User not allowed to donate this item.", HttpStatus.CONFLICT);
+        }
+        request.setRequisitionId(requisitionId);
+        request.setStatus(StatusItemEnum.DONATED);
+        var requisitions = requisitionsRepository.save(request);
         return requisitionsMapper.toResponse(requisitions);
     }
 }

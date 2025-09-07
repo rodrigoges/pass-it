@@ -4,8 +4,6 @@ import br.com.api.passit.db.Users;
 import br.com.api.passit.services.ItemsServices;
 import br.com.api.passit.to.GetItemsRequestTO;
 import br.com.api.passit.to.GetItemsResponseTO;
-import br.com.api.passit.to.GetUsersRequestTO;
-import br.com.api.passit.to.GetUsersResponseTO;
 import br.com.api.passit.to.ItemsRequestTO;
 import br.com.api.passit.to.ItemsResponseTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +46,12 @@ public class ItemsController {
     @GetMapping
     public ResponseEntity<GetItemsResponseTO> get(@ModelAttribute GetItemsRequestTO request) {
         var response = itemsServices.get(request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/{itemId}")
+    public ResponseEntity<ItemsResponseTO> getById(@PathVariable UUID itemId, @AuthenticationPrincipal Users authUser) {
+        var response = itemsServices.getById(itemId, authUser.getUserId());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

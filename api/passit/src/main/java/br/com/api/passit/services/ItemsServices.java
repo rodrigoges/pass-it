@@ -121,4 +121,14 @@ public class ItemsServices {
     private List<ItemsResponseTO> buildGetItemsResponse(List<Items> items) {
         return items.stream().map(itemsMapper::toResponse).toList();
     }
+
+    public ItemsResponseTO getById(UUID itemId, UUID userId) {
+        var userById = usersRepository.findById(userId);
+        if (userById.isEmpty()) {
+            throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
+        }
+        var item = itemsRepository.findById(itemId)
+                .orElseThrow(() -> new FlowException("Item not found.", HttpStatus.NOT_FOUND));
+        return itemsMapper.toResponse(item);
+    }
 }

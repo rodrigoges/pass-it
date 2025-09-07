@@ -51,7 +51,11 @@ public class ItemsServices {
         if (userById.isEmpty()) {
             throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
         }
-        itemsRepository.findById(itemId).orElseThrow(() -> new FlowException("Item not found.", HttpStatus.NOT_FOUND));
+        var itemFounded = itemsRepository.findById(itemId)
+                .orElseThrow(() -> new FlowException("Item not found.", HttpStatus.NOT_FOUND));
+        if (!itemFounded.getUser().getUserId().equals(userId)) {
+            throw new FlowException("User not allowed.", HttpStatus.CONFLICT);
+        }
         var itemEntity = itemsMapper.toEntity(request);
         itemEntity.setUser(userById.get());
         itemEntity.setItemId(itemId);

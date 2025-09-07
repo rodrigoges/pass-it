@@ -82,7 +82,7 @@ public class UsersServices {
         var criteriaQuery = criteriaBuilder.createQuery(Users.class);
         var root = criteriaQuery.from(Users.class);
         var predicates = buildPredicate(criteriaBuilder, root, request);
-        var countQuery = buildCountQuery(predicates, request);
+        var countQuery = buildCountQuery(predicates);
         if (countQuery.intValue() > 0) {
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
             criteriaQuery.orderBy(sortAndOrderToUsers(criteriaBuilder, root, request));
@@ -109,7 +109,7 @@ public class UsersServices {
         return predicates;
     }
 
-    private Long buildCountQuery(List<Predicate> predicates, GetUsersRequestTO request) {
+    private Long buildCountQuery(List<Predicate> predicates) {
         var criteriaBuilder = entityManager.getCriteriaBuilder();
         var countQuery = criteriaBuilder.createQuery(Long.class);
         var root = countQuery.from(Users.class);

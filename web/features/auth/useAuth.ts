@@ -9,7 +9,6 @@ import { LoginFormData, RegisterFormData } from './authSchemas';
 // Login Mutation
 const loginUser = async (credentials: LoginFormData): Promise<LoginResponse> => {
   const { data } = await apiClient.post<string>('/auth/login', credentials);
-  console.log('🔑 Resposta do login:', data);
   
   // A API retorna apenas o token como string, não um objeto
   // Vamos criar um objeto temporário com o token e um usuário mock

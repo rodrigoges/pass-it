@@ -26,12 +26,6 @@ const ItemsCatalogPage: React.FC = () => {
 
   const { data, isLoading, isError } = useItems(filters);
 
-  // Debug logs
-  console.log('🎯 ItemsCatalogPage - Estado:', { data, isLoading, isError });
-  console.log('🎯 ItemsCatalogPage - Filtros:', filters);
-  console.log('🎯 ItemsCatalogPage - data?.items:', data?.items);
-  console.log('🎯 ItemsCatalogPage - data?.items?.length:', data?.items?.length);
-
   const handleFilterChange = (key: string, value: string) => {
     setSearchParams(prev => {
       if (value) {

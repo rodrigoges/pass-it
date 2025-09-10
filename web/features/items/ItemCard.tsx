@@ -48,7 +48,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item, index = 0 }) => {
 
   return (
     <Card className="flex flex-col h-full group transition-shadow duration-300 hover:shadow-xl">
-      <Link to={`/items/${index}`} className="block">
+      <Link to={`/items/${item.id}`} className="block">
         <div className="aspect-w-16 aspect-h-9 relative">
           {imageLoading && (
             <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">

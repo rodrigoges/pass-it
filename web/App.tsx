@@ -10,6 +10,7 @@ import { UserType } from './api/types';
 // Lazy load pages
 const ItemsCatalogPage = lazy(() => import('./features/items/ItemsCatalogPage.tsx'));
 const ItemDetailPage = lazy(() => import('./features/items/ItemDetailPage.tsx'));
+const CreateItemPage = lazy(() => import('./features/items/CreateItemPage.tsx'));
 const LoginPage = lazy(() => import('./features/auth/LoginPage.tsx'));
 const RegisterPage = lazy(() => import('./features/auth/RegisterPage.tsx'));
 const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage.tsx'));
@@ -37,6 +38,14 @@ function App() {
                 <Route path="register" element={<RegisterPage />} />
                 
                 {/* Protected Routes */}
+                <Route
+                  path="create-item"
+                  element={
+                    <RequireAuth>
+                      <CreateItemPage />
+                    </RequireAuth>
+                  }
+                />
                 <Route
                   path="dashboard"
                   element={

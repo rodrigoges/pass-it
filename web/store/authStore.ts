@@ -22,6 +22,15 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage', // name of the item in storage (must be unique)
+      partialize: (state) => ({ token: state.token, user: state.user }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Garantir que o token seja sempre uma string
+          if (state.token && typeof state.token === 'object' && 'token' in state.token) {
+            state.token = state.token.token;
+          }
+        }
+      },
     }
   )
 );

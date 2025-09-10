@@ -10,14 +10,21 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: false, // Adicionar explicitamente
 });
 
 apiClient.interceptors.request.use(
   (config) => {
     const { token } = useAuthStore.getState();
+    
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // Garantir que o token seja sempre uma string
+      const tokenValue = typeof token === 'string' ? token : (token as any).token;
+      if (tokenValue) {
+        config.headers.Authorization = `Bearer ${tokenValue}`;
+      }
     }
+    
     return config;
   },
   (error) => {

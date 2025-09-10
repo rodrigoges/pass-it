@@ -19,28 +19,31 @@ export const Header: React.FC = () => {
             <Link to="/" className="text-2xl font-bold text-primary-600">
               PassIt
             </Link>
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
-                <NavLink to="/" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses} end>
-                  Catálogo
-                </NavLink>
-                {token && (
-                   <NavLink to="/dashboard" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
+            <div className="ml-10 flex items-baseline space-x-4">
+              <NavLink to="/" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses} end>
+                Catálogo
+              </NavLink>
+              {(token || user) && (
+                <>
+                  <NavLink to="/create-item" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
+                    Cadastrar Item
+                  </NavLink>
+                  <NavLink to="/dashboard" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
                     Dashboard
                   </NavLink>
-                )}
-                 {user?.userType === UserType.ADMIN && (
-                   <NavLink to="/admin/users" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
-                    Usuários
-                  </NavLink>
-                )}
-              </div>
+                </>
+              )}
+               {user?.userType === UserType.ADMIN && (
+                 <NavLink to="/admin/users" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
+                  Usuários
+                </NavLink>
+              )}
             </div>
           </div>
           <div className="flex items-center">
-            {token && user ? (
+            {(token || user) ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600 hidden sm:block">Olá, {user.name.split(' ')[0]}</span>
+                <span className="text-sm text-gray-600 hidden sm:block">Olá, {user?.name?.split(' ')[0] || 'Usuário'}</span>
                 <Button onClick={logout} variant="secondary" size="sm">
                   Sair
                 </Button>

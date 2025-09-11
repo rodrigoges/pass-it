@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useItem } from './useItems';
 import { Spinner } from '../../components/ui/Spinner';
-import { Button } from '../../components/ui/Button';
+import { CreateItemForm } from './CreateItemForm';
 import { formatDate } from '../../lib/utils';
 import { ItemCategory, ItemStatus } from '../../api/types';
 import { useAuthStore } from '../../store/authStore';
@@ -46,51 +46,30 @@ const ItemDetailPage: React.FC = () => {
     if (isLoading) return <Spinner />;
     if (isError || !item) return <p className="text-center text-red-500">Item não encontrado.</p>;
 
-    const imageUrl = item.imageUrl || `https://picsum.photos/seed/${item.id}/800/600`;
-
-    const canRequest = user && (user.userType === 'REQUESTER' || user.userType === 'INSTITUTION') && item.status === 'AVAILABLE';
-
-    const handleRequest = () => {
-      // POST /requisitions would be called here via a mutation
-      alert(`Solicitação para "${item.title}" enviada!`);
+    // Preparar dados iniciais para o formulário
+    const initialData = {
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        imageUrl: item.imageUrl || '',
     };
 
     return (
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2">
-                <div>
-                    <img src={imageUrl} alt={item.title} className="w-full h-full object-cover"/>
-                </div>
-                <div className="p-8 flex flex-col">
-                    <div className="flex justify-between items-start">
-                        <span className="text-sm font-semibold uppercase tracking-wide text-primary-600">
-                            {categoryTranslations[item.category] || item.category}
-                        </span>
-                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[item.status]}`}>
-                            {statusTranslations[item.status] || item.status}
-                        </span>
-                    </div>
-                    <h1 className="text-3xl font-bold text-gray-900 mt-2">{item.title}</h1>
-                    <div className="mt-4 text-sm text-gray-500">
-                        <p>Doador: <span className="font-medium text-gray-700">{item.donor.name}</span></p>
-                        <p>Publicado em: <span className="font-medium text-gray-700">{formatDate(item.createdAt)}</span></p>
-                    </div>
-                    <p className="mt-6 text-gray-700 leading-relaxed flex-grow">{item.description}</p>
-                    
-                    {canRequest && (
-                        <div className="mt-8">
-                            <Button onClick={handleRequest} className="w-full" size="lg">
-                                Solicitar Item
-                            </Button>
-                        </div>
-                    )}
-                     {!user && (
-                        <div className="mt-8 text-center bg-gray-100 p-4 rounded-md">
-                           <p className="text-gray-700">Faça login como Solicitante ou Instituição para requisitar este item.</p>
-                        </div>
-                    )}
-                </div>
+        <div style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', padding: '20px' }}>
+            <div className="text-center mb-8">
+                <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+                    Detalhes do Item
+                </h1>
+                <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
+                    Visualize as informações do item selecionado.
+                </p>
             </div>
+
+            <CreateItemForm 
+                initialData={initialData}
+                readOnly={true}
+                title="Detalhes do Item"
+            />
         </div>
     );
 };

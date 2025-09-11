@@ -31,10 +31,14 @@ const getItems = async (params: GetItemsParams): Promise<PaginatedResponse<Item>
     // Debug: verificar estrutura dos dados
     console.log('🔍 Dados recebidos da API:', data);
     console.log('🔍 Primeiro item:', data?.items?.[0]);
-    console.log('🔍 ID do primeiro item:', data?.items?.[0]?.id);
+    console.log('🔍 ID do primeiro item:', data?.items?.[0]?.itemId);
     
     // A API retorna um objeto com items e totalNumberOfRecords
-    const items = data.items || [];
+    // Mapear itemId para id para manter compatibilidade com a interface
+    const items = (data.items || []).map((item: any) => ({
+        ...item,
+        id: item.itemId // Mapear itemId para id
+    }));
     const totalNumberOfRecords = data.totalNumberOfRecords || items.length;
     
     const mappedData = {

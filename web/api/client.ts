@@ -17,17 +17,29 @@ apiClient.interceptors.request.use(
   (config) => {
     const { token } = useAuthStore.getState();
     
+    console.log('🔍 Interceptor - URL:', config.url);
+    console.log('🔍 Interceptor - Método:', config.method);
+    console.log('🔍 Interceptor - Token original:', token);
+    console.log('🔍 Interceptor - Token tipo:', typeof token);
+    
     if (token) {
       // Garantir que o token seja sempre uma string
       const tokenValue = typeof token === 'string' ? token : (token as any).token;
+      console.log('🔍 Interceptor - Token value:', tokenValue);
+      
       if (tokenValue) {
         config.headers.Authorization = `Bearer ${tokenValue}`;
+        console.log('🔍 Interceptor - Header Authorization:', `Bearer ${tokenValue.substring(0, 20)}...`);
       }
+    } else {
+      console.log('❌ Interceptor - Nenhum token encontrado');
     }
     
+    console.log('🔍 Interceptor - Headers finais:', config.headers);
     return config;
   },
   (error) => {
+    console.error('❌ Interceptor - Erro:', error);
     return Promise.reject(error);
   }
 );

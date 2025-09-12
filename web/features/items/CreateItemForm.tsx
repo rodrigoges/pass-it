@@ -2,12 +2,14 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createItemSchema, CreateItemFormData } from './itemSchemas';
-import { useCreateItem } from './useItems';
+import { useCreateItem, useUpdateItem } from './useItems';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
 import { ItemCategory } from '../../api/types';
 import { useAuthStore } from '../../store/authStore';
+
+import { ItemStatus } from '../../api/types';
 
 interface CreateItemFormProps {
   onSuccess?: () => void;
@@ -16,7 +18,9 @@ interface CreateItemFormProps {
     description: string;
     category: string;
     imageUrl?: string;
+    status?: ItemStatus;
   };
+  id?: string;
   readOnly?: boolean;
   title?: string;
 }
@@ -24,10 +28,12 @@ interface CreateItemFormProps {
 export const CreateItemForm: React.FC<CreateItemFormProps> = ({ 
   onSuccess, 
   initialData, 
+  id,
   readOnly = false, 
   title = "Cadastrar Novo Item" 
 }) => {
   const createItemMutation = useCreateItem();
+  const updateItemMutation = useUpdateItem();
   const { token, user } = useAuthStore();
   
   const {
@@ -41,29 +47,34 @@ export const CreateItemForm: React.FC<CreateItemFormProps> = ({
   });
 
   const onSubmit = async (data: CreateItemFormData) => {
-    // Se estiver em modo somente leitura, não fazer nada
-    if (readOnly) {
-      return;
-    }
-
-    // Verificar se o usuário está autenticado
+    if (readOnly) return;
     if (!token || !user) {
-      console.error('❌ Usuário não autenticado');
       return;
     }
-
     try {
-      await createItemMutation.mutateAsync({
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        imageUrl: data.imageUrl || undefined,
-      });
-      
+      if (id && typeof id === 'string' && id !== '' && id !== 'undefined') {
+        await updateItemMutation.mutateAsync({
+          itemId: id,
+          itemData: {
+            title: data.title,
+            description: data.description,
+            category: data.category,
+            imageUrl: data.imageUrl || null,
+            status: initialData?.status || ItemStatus.AVAILABLE,
+          }
+        });
+      } else {
+        await createItemMutation.mutateAsync({
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          imageUrl: data.imageUrl || undefined,
+        });
+      }
       reset();
       onSuccess?.();
     } catch (error) {
-      console.error('Erro ao criar item:', error);
+      // erro ao salvar item
     }
   };
 
@@ -160,24 +171,28 @@ export const CreateItemForm: React.FC<CreateItemFormProps> = ({
                 type="button"
                 variant="secondary"
                 onClick={() => reset()}
-                disabled={createItemMutation.isPending}
+                disabled={createItemMutation.isPending || updateItemMutation.isPending}
               >
                 Limpar
               </Button>
               <Button
                 type="submit"
                 variant="primary"
-                disabled={createItemMutation.isPending}
+                disabled={createItemMutation.isPending || updateItemMutation.isPending}
               >
-                {createItemMutation.isPending ? 'Cadastrando...' : 'Cadastrar Item'}
+                {id
+                  ? updateItemMutation.isPending
+                    ? 'Salvando...' : 'Salvar Alterações'
+                  : createItemMutation.isPending
+                    ? 'Cadastrando...' : 'Cadastrar Item'}
               </Button>
             </div>
           )}
 
-          {createItemMutation.isError && (
+          {(createItemMutation.isError || updateItemMutation.isError) && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-md">
               <p className="text-sm text-red-600">
-                Erro ao cadastrar item. Verifique se você está logado e tente novamente.
+                Erro ao salvar item. Verifique se você está logado e tente novamente.
               </p>
               <p className="text-xs text-red-500 mt-1">
                 Se o problema persistir, verifique o console do navegador para mais detalhes.
@@ -185,10 +200,10 @@ export const CreateItemForm: React.FC<CreateItemFormProps> = ({
             </div>
           )}
 
-          {createItemMutation.isSuccess && (
+          {(createItemMutation.isSuccess || updateItemMutation.isSuccess) && (
             <div className="p-4 bg-green-50 border border-green-200 rounded-md">
               <p className="text-sm text-green-600">
-                Item cadastrado com sucesso!
+                {id ? 'Item atualizado com sucesso!' : 'Item cadastrado com sucesso!'}
               </p>
             </div>
           )}

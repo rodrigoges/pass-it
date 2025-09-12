@@ -52,6 +52,7 @@ const ItemDetailPage: React.FC = () => {
         description: item.description,
         category: item.category,
         imageUrl: item.imageUrl || '',
+        status: item.status,
     };
 
     return (
@@ -67,8 +68,8 @@ const ItemDetailPage: React.FC = () => {
 
             <CreateItemForm 
                 initialData={initialData}
-                readOnly={true}
-                title="Detalhes do Item"
+                id={item.id}
+                title="Editar Item"
             />
         </div>
     );

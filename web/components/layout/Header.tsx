@@ -31,6 +31,9 @@ export const Header: React.FC = () => {
                   <NavLink to="/dashboard" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
                     Dashboard
                   </NavLink>
+                  <NavLink to="/profile" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
+                    Atualizar Perfil
+                  </NavLink>
                 </>
               )}
                {user?.userType === UserType.ADMIN && (

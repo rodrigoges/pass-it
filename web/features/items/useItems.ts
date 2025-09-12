@@ -1,3 +1,30 @@
+const updateItem = async (itemId: string, itemData: { title: string; description: string; category: string; imageUrl?: string; status: ItemStatus }): Promise<Item> => {
+  if (!itemId) throw new Error('Item ID é obrigatório para atualização');
+  const payload = {
+    title: itemData.title,
+    description: itemData.description,
+    category: itemData.category,
+    imageUrl: itemData.imageUrl ?? null,
+    status: itemData.status ?? ItemStatus.AVAILABLE,
+  };
+  try {
+  const response = await apiClient.put<Item>(`/items/${itemId}`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Erro ao atualizar item:', error);
+    throw error;
+  }
+};
+
+export const useUpdateItem = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ itemId, itemData }: { itemId: string; itemData: { title: string; description: string; category: string; imageUrl?: string; status: ItemStatus } }) => updateItem(itemId, itemData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['items'] });
+    },
+  });
+};
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../api/client';
@@ -29,9 +56,6 @@ const getItems = async (params: GetItemsParams): Promise<PaginatedResponse<Item>
     const { data } = response;
     
     // Debug: verificar estrutura dos dados
-    console.log('🔍 Dados recebidos da API:', data);
-    console.log('🔍 Primeiro item:', data?.items?.[0]);
-    console.log('🔍 ID do primeiro item:', data?.items?.[0]?.itemId);
     
     // A API retorna um objeto com items e totalNumberOfRecords
     // Mapear itemId para id para manter compatibilidade com a interface
@@ -41,16 +65,15 @@ const getItems = async (params: GetItemsParams): Promise<PaginatedResponse<Item>
     }));
     const totalNumberOfRecords = data.totalNumberOfRecords || items.length;
     
-    const mappedData = {
-      items: items,
-      totalNumberOfRecords: totalNumberOfRecords,
+    const mappedData: PaginatedResponse<Item> = {
+      data: items,
+      total: totalNumberOfRecords,
       offset: params.offset || 0,
       limit: params.limit || 12
     };
     
     return mappedData;
   } catch (error) {
-    console.error('❌ Erro ao buscar itens:', error);
     throw error;
   }
 };
@@ -65,11 +88,11 @@ export const useItems = (params: GetItemsParams) => {
 };
 
 const getItem = async (itemId: string): Promise<Item> => {
-    if (!itemId || itemId === 'undefined') {
-        throw new Error('Item ID é obrigatório');
-    }
-    const { data } = await apiClient.get<Item>(`/items/${itemId}`);
-    return data;
+  if (!itemId || itemId === 'undefined') {
+    throw new Error('Item ID é obrigatório');
+  }
+  const { data } = await apiClient.get<Item>(`/items/${itemId}`);
+  return { ...data, id: (data as any).itemId };
 };
 
 export const useItem = (itemId: string) => {

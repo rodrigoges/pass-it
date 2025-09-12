@@ -18,8 +18,6 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       user: null,
       setAuth: (token, user) => {
-        console.log('🔍 setAuth - Token recebido:', token);
-        console.log('🔍 setAuth - Token tipo:', typeof token);
         set({ token, user });
       },
       logout: () => set({ token: null, user: null }),
@@ -27,15 +25,17 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'auth-storage', // name of the item in storage (must be unique)
       onRehydrateStorage: () => (state) => {
-        console.log('🔍 onRehydrateStorage - Estado:', state);
         if (state) {
           // Garantir que o token seja sempre uma string
-          if (state.token && typeof state.token === 'object' && 'token' in state.token) {
-            console.log('🔍 onRehydrateStorage - Corrigindo token de objeto para string');
-            state.token = state.token.token;
+          if (
+            state.token !== null &&
+            typeof state.token === 'object' &&
+            state.token !== null &&
+            state.token !== undefined &&
+            'token' in state.token
+          ) {
+            state.token = (state.token as { token: string }).token;
           }
-          console.log('🔍 onRehydrateStorage - Token final:', state.token);
-          console.log('🔍 onRehydrateStorage - Token tipo final:', typeof state.token);
         }
       },
     }

@@ -4,6 +4,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from '../ui/Button';
 import { UserType } from '../../api/types';
+import { CatalogIcon, AddItemIcon, DashboardIcon, ProfileIcon, UsersIcon } from '../ui/MenuIcons';
 
 export const Header: React.FC = () => {
   const { user, token, logout } = useAuthStore();
@@ -20,25 +21,40 @@ export const Header: React.FC = () => {
               PassIt
             </Link>
             <div className="ml-10 flex items-baseline space-x-4">
-              <NavLink to="/" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses} end>
-                Catálogo
+              <NavLink to="/" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses + ' flex items-center'} end>
+                <span className="flex items-center">
+                  <CatalogIcon />
+                  <span className="ml-1">Catálogo</span>
+                </span>
               </NavLink>
               {(token || user) && (
                 <>
-                  <NavLink to="/create-item" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
-                    Cadastrar Item
+                  <NavLink to="/create-item" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses + ' flex items-center'}>
+                    <span className="flex items-center">
+                      <AddItemIcon />
+                      <span className="ml-1">Cadastrar Item</span>
+                    </span>
                   </NavLink>
-                  <NavLink to="/dashboard" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
-                    Dashboard
+                  <NavLink to="/dashboard" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses + ' flex items-center'}>
+                    <span className="flex items-center">
+                      <DashboardIcon />
+                      <span className="ml-1">Dashboard</span>
+                    </span>
                   </NavLink>
-                  <NavLink to="/profile" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
-                    Meu Perfil
+                  <NavLink to="/profile" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses + ' flex items-center'}>
+                    <span className="flex items-center">
+                      <ProfileIcon />
+                      <span className="ml-1">Meu Perfil</span>
+                    </span>
                   </NavLink>
                 </>
               )}
                {user?.userType === UserType.ADMIN && (
-                 <NavLink to="/admin/users" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
-                  Usuários
+                 <NavLink to="/admin/users" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses + ' flex items-center'}>
+                  <span className="flex items-center">
+                    <UsersIcon />
+                    <span className="ml-1">Usuários</span>
+                  </span>
                 </NavLink>
               )}
             </div>

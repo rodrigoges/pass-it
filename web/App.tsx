@@ -14,6 +14,7 @@ const LoginPage = lazy(() => import('./features/auth/LoginPage.tsx'));
 const RegisterPage = lazy(() => import('./features/auth/RegisterPage.tsx'));
 const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage.tsx'));
 const ProfilePage = lazy(() => import('./features/profile/ProfilePage.tsx'));
+const ManageUsersPage = lazy(() => import('./features/admin/ManageUsersPage.tsx'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,8 +57,7 @@ function App() {
                   }
                 />
                 
-                {/* Admin Routes (Example) */}
-                {/*
+                {/* Admin Routes */}
                 <Route
                   path="admin/users"
                   element={
@@ -66,7 +66,6 @@ function App() {
                     </RequireAuth>
                   }
                 />
-                */}
 
                 {/* Catch-all for 404 */}
                 <Route path="*" element={<div className="text-center py-10"><h2>404: Página não encontrada</h2></div>} />

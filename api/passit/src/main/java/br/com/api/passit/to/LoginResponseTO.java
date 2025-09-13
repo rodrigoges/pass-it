@@ -1,6 +1,9 @@
 package br.com.api.passit.to;
 
+import java.util.UUID;
+
 public record LoginResponseTO(
-        String token
+        String token,
+        UUID userId
 ) {
 }

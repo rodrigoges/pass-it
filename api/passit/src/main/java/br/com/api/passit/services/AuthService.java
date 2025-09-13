@@ -3,6 +3,8 @@ package br.com.api.passit.services;
 import br.com.api.passit.db.Users;
 import br.com.api.passit.db.UsersRepository;
 import br.com.api.passit.exceptions.FlowException;
+import br.com.api.passit.mappers.UsersMapper;
+import br.com.api.passit.to.LoginResponseTO;
 import br.com.api.passit.utils.JWTUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,19 +16,22 @@ public class AuthService {
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtils jwtUtil;
+    private final UsersMapper usersMapper;
 
-    public AuthService(UsersRepository usersRepository, PasswordEncoder passwordEncoder, JWTUtils jwtUtil) {
+    public AuthService(UsersRepository usersRepository, PasswordEncoder passwordEncoder, JWTUtils jwtUtil, UsersMapper usersMapper) {
         this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.usersMapper = usersMapper;
     }
 
-    public String login(String email, String password) {
+    public LoginResponseTO login(String email, String password) {
         Users user = usersRepository.findByEmail(email)
                 .orElseThrow(() -> new FlowException("User not found", HttpStatus.NOT_FOUND));
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new FlowException("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
-        return jwtUtil.generateToken(user.getUserId(), user.getEmail());
+        var token = jwtUtil.generateToken(user.getUserId(), user.getEmail());
+        return new LoginResponseTO(token, user.getUserId());
     }
 }

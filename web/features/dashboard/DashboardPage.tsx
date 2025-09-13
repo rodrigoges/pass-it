@@ -59,8 +59,8 @@ const DashboardPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {itemsData?.items.map((item, index) => (
-                    <tr key={index}>
+                  {Array.isArray(itemsData?.data) && itemsData.data.map((item, index) => (
+                    <tr key={item.id ?? index}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.title}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.category}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.status}</td>

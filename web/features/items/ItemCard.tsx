@@ -85,14 +85,16 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item, index = 0 }) => {
             onLoad={handleImageLoad}
             style={{ display: imageLoading ? 'none' : 'block' }}
           />
-          <button
-            type="button"
-            className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-red-100"
-            onClick={e => { e.preventDefault(); setModalOpen(true); }}
-            title="Excluir item"
-          >
-            <TrashIcon className="w-5 h-5 text-red-600" />
-          </button>
+          {token && (
+            <button
+              type="button"
+              className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-red-100"
+              onClick={e => { e.preventDefault(); setModalOpen(true); }}
+              title="Excluir item"
+            >
+              <TrashIcon className="w-5 h-5 text-red-600" />
+            </button>
+          )}
         </div>
         <div className="p-4 flex-grow flex flex-col">
           <div className="flex justify-between items-start">

@@ -32,7 +32,7 @@ export const Header: React.FC = () => {
                     Dashboard
                   </NavLink>
                   <NavLink to="/profile" className={({isActive}) => isActive ? `${navLinkClasses} ${activeNavLinkClasses}` : navLinkClasses}>
-                    Atualizar Perfil
+                    Meu Perfil
                   </NavLink>
                 </>
               )}

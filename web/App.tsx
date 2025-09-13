@@ -14,6 +14,7 @@ const CreateItemPage = lazy(() => import('./features/items/CreateItemPage.tsx'))
 const LoginPage = lazy(() => import('./features/auth/LoginPage.tsx'));
 const RegisterPage = lazy(() => import('./features/auth/RegisterPage.tsx'));
 const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage.tsx'));
+const ProfilePage = lazy(() => import('./features/profile/ProfilePage.tsx'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +37,7 @@ function App() {
                 <Route path="items/:itemId" element={<ItemDetailPage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
+                <Route path="profile" element={<ProfilePage />} />
                 
                 {/* Protected Routes */}
                 <Route

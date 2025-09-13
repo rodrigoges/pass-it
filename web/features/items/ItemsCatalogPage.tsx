@@ -38,7 +38,7 @@ const ItemsCatalogPage: React.FC = () => {
     });
   };
   
-  const totalPages = data ? Math.ceil(data.totalNumberOfRecords / limit) : 0;
+  const totalPages = data ? Math.ceil((data.total ?? 0) / limit) : 0;
 
   return (
     <div style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', padding: '20px' }}>
@@ -72,16 +72,16 @@ const ItemsCatalogPage: React.FC = () => {
       
       {isError && <p className="text-center text-red-500">Falha ao carregar os itens.</p>}
       
-      {!isLoading && !isError && data?.items && data.items.length === 0 && (
+      {!isLoading && !isError && data?.data && data.data.length === 0 && (
         <div className="text-center py-16">
           <h3 className="text-xl font-semibold text-gray-700">Nenhum item encontrado</h3>
           <p className="text-gray-500 mt-2">Tente ajustar os filtros ou volte mais tarde.</p>
         </div>
       )}
 
-      {!isLoading && !isError && data?.items && data.items.length > 0 && (
+      {!isLoading && !isError && data?.data && data.data.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {data.items.map((item, index) => <ItemCard key={index} item={item} index={index} />)}
+          {data.data.map((item, index) => <ItemCard key={item.id ?? item.itemId ?? index} item={item} index={index} />)}
         </div>
       )}
 

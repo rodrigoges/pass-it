@@ -1,5 +1,6 @@
 package br.com.api.passit.api;
 
+import br.com.api.passit.db.Users;
 import br.com.api.passit.services.UsersServices;
 import br.com.api.passit.to.GetUsersRequestTO;
 import br.com.api.passit.to.GetUsersResponseTO;
@@ -8,6 +9,7 @@ import br.com.api.passit.to.UsersResponseTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,20 +36,33 @@ public class UsersController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UsersResponseTO> update(@PathVariable UUID userId, @RequestBody UsersRequestTO request) {
-        var response = usersServices.update(userId, request);
+    public ResponseEntity<UsersResponseTO> update(
+            @PathVariable UUID userId,
+            @AuthenticationPrincipal Users authUser,
+            @RequestBody UsersRequestTO request
+    ) {
+        var response = usersServices.update(userId, authUser.getUserId(), request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<GetUsersResponseTO> get(@ModelAttribute GetUsersRequestTO request) {
-        var response = usersServices.get(request);
+    public ResponseEntity<GetUsersResponseTO> get(
+            @ModelAttribute GetUsersRequestTO request,
+            @AuthenticationPrincipal Users authUser
+    ) {
+        var response = usersServices.get(request, authUser.getUserId());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UsersResponseTO> getById(@PathVariable UUID userId, @AuthenticationPrincipal Users authUser) {
+        var response = usersServices.getById(userId, authUser.getUserId());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> delete(@PathVariable UUID userId) {
-        usersServices.delete(userId);
+    public ResponseEntity<String> delete(@PathVariable UUID userId, @AuthenticationPrincipal Users authUser) {
+        usersServices.delete(userId, authUser.getUserId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted successfully");
     }
 }

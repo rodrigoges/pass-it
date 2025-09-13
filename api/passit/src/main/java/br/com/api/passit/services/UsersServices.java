@@ -54,7 +54,11 @@ public class UsersServices {
         return usersMapper.toResponse(user);
     }
 
-    public UsersResponseTO update(UUID userId, UsersRequestTO request) {
+    public UsersResponseTO update(UUID userId, UUID authUserId, UsersRequestTO request) {
+        var authUserById = usersRepository.findById(authUserId);
+        if (authUserById.isEmpty()) {
+            throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
+        }
         var userById = usersRepository.findById(userId);
         if (userById.isEmpty()) {
             throw new FlowException("User " + request.name() + " not found.", HttpStatus.NOT_FOUND);
@@ -76,7 +80,23 @@ public class UsersServices {
         return usersMapper.toResponse(user);
     }
 
-    public GetUsersResponseTO get(GetUsersRequestTO request) {
+    public UsersResponseTO getById(UUID userId, UUID authUserId) {
+        var authUserById = usersRepository.findById(authUserId);
+        if (authUserById.isEmpty()) {
+            throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
+        }
+        var userById = usersRepository.findById(userId);
+        if (userById.isEmpty()) {
+            throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
+        }
+        return usersMapper.toResponse(userById.get());
+    }
+
+    public GetUsersResponseTO get(GetUsersRequestTO request, UUID authUserId) {
+        var authUserById = usersRepository.findById(authUserId);
+        if (authUserById.isEmpty()) {
+            throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
+        }
         List<UsersResponseTO> usersResponse = new ArrayList<>();
         var criteriaBuilder = entityManager.getCriteriaBuilder();
         var criteriaQuery = criteriaBuilder.createQuery(Users.class);
@@ -136,7 +156,11 @@ public class UsersServices {
         return users.stream().map(usersMapper::toResponse).toList();
     }
 
-    public void delete(UUID userId) {
+    public void delete(UUID userId, UUID authUserId) {
+        var authUserById = usersRepository.findById(authUserId);
+        if (authUserById.isEmpty()) {
+            throw new FlowException("User not found.", HttpStatus.NOT_FOUND);
+        }
         var userById = usersRepository.findById(userId);
         if (userById.isEmpty()) {
             throw new FlowException("Id " + userId + " not found.", HttpStatus.NOT_FOUND);

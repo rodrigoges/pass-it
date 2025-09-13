@@ -74,7 +74,6 @@ export const CreateItemForm: React.FC<CreateItemFormProps> = ({
       reset();
       onSuccess?.();
     } catch (error) {
-      // erro ao salvar item
     }
   };
 

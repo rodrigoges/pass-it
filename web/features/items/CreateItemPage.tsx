@@ -6,7 +6,6 @@ const CreateItemPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSuccess = () => {
-    // Redirecionar para o catálogo após cadastro bem-sucedido
     navigate('/');
   };
 

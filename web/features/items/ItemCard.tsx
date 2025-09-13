@@ -60,9 +60,8 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item, index = 0 }) => {
           'Authorization': `Bearer ${token}`,
         },
       });
-      window.location.reload(); // ou atualizar lista via callback
+      window.location.reload(); 
     } catch (e) {
-      // erro ao deletar
     }
     setDeleting(false);
     setModalOpen(false);

@@ -10,8 +10,6 @@ interface AuthState {
   logout: () => void;
 }
 
-// Fix: Updated to use the curried `create<AuthState>()(...)` syntax for Zustand middleware.
-// This is required for proper TypeScript type inference with Zustand v4+ and fixes the type error.
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -23,10 +21,9 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ token: null, user: null }),
     }),
     {
-      name: 'auth-storage', // name of the item in storage (must be unique)
+      name: 'auth-storage',
       onRehydrateStorage: () => (state) => {
         if (state) {
-          // Garantir que o token seja sempre uma string
           if (
             state.token !== null &&
             typeof state.token === 'object' &&

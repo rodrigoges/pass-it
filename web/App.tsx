@@ -7,7 +7,6 @@ import { RequireAuth } from './components/layout/RequireAuth';
 import { Spinner } from './components/ui/Spinner';
 import { UserType } from './api/types';
 
-// Lazy load pages
 const ItemsCatalogPage = lazy(() => import('./features/items/ItemsCatalogPage.tsx'));
 const ItemDetailPage = lazy(() => import('./features/items/ItemDetailPage.tsx'));
 const CreateItemPage = lazy(() => import('./features/items/CreateItemPage.tsx'));

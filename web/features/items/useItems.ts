@@ -44,24 +44,18 @@ interface GetItemsParams {
 
 const getItems = async (params: GetItemsParams): Promise<PaginatedResponse<Item>> => {
   try {
-    // Tentar primeiro com cliente autenticado, depois sem autenticação
     let response;
     try {
       response = await apiClient.get<any>('/items', { params });
     } catch (authError) {
-      // Se falhar com autenticação, tentar sem token
       response = await axios.get('http://localhost:8080/passit/items', { params });
     }
     
     const { data } = response;
-    
-    // Debug: verificar estrutura dos dados
-    
-    // A API retorna um objeto com items e totalNumberOfRecords
-    // Mapear itemId para id para manter compatibilidade com a interface
+
     const items = (data.items || []).map((item: any) => ({
         ...item,
-        id: item.itemId // Mapear itemId para id
+        id: item.itemId
     }));
     const totalNumberOfRecords = data.totalNumberOfRecords || items.length;
     
@@ -104,12 +98,11 @@ export const useItem = (itemId: string) => {
 };
 
 const createItem = async (itemData: { title: string; description: string; category: string; imageUrl?: string }): Promise<Item> => {
-    // Preparar dados para envio
     const payload = {
         title: itemData.title,
         description: itemData.description,
         category: itemData.category,
-        status: ItemStatus.AVAILABLE, // Adicionar status AVAILABLE por padrão
+        status: ItemStatus.AVAILABLE,
         ...(itemData.imageUrl && { imageUrl: itemData.imageUrl })
     };
     
@@ -128,7 +121,6 @@ export const useCreateItem = () => {
     return useMutation({
         mutationFn: createItem,
         onSuccess: () => {
-            // Invalidar a query de itens para atualizar a lista
             queryClient.invalidateQueries({ queryKey: ['items'] });
         },
     });

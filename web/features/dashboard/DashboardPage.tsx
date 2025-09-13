@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { traduzCategoria, traduzStatus } from '../../lib/traducaoEnums';
 import { useAuthStore } from '../../store/authStore';
 import { useItems } from '../items/useItems';
 import { Card } from '../../components/ui/Card';
@@ -8,7 +9,6 @@ import { Spinner } from '../../components/ui/Spinner';
 const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();
   
-  // Example data fetching - replace with real requisition/user counts later
   const { data: itemsData, isLoading: isLoadingItems } = useItems({ 
     limit: 5, 
     offset: 0, 
@@ -62,8 +62,8 @@ const DashboardPage: React.FC = () => {
                   {Array.isArray(itemsData?.data) && itemsData.data.map((item, index) => (
                     <tr key={item.id ?? index}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.title}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.category}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.status}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{traduzCategoria(item.category)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{traduzStatus(item.status)}</td>
                     </tr>
                   ))}
                 </tbody>

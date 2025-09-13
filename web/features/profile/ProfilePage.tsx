@@ -7,29 +7,42 @@ const API_BASE = 'http://localhost:8080/passit';
 
 export const ProfilePage: React.FC = () => {
   const { user, token } = useAuthStore();
+  let userId = user?.id;
+  if (!userId && token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      userId = payload.userId;
+    } catch (err) {
+      
+    }
+  }
+
+  const isUserReady = !!userId && !!token;
   const [form, setForm] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user || !token) return;
-    setLoading(true);
-    fetch(`${API_BASE}/users/${user.id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setForm(data);
+    const fetchUser = async () => {
+      if (!isUserReady) {
         setLoading(false);
-      })
-      .catch(() => {
+        return;
+      }
+      setLoading(true);
+      try {
+        const { getUserById } = await import('../auth/getUserById');
+        const userData = await getUserById(userId);
+        setForm(userData);
+        setLoading(false);
+      } catch (err) {
+        console.error('[ProfilePage] Erro ao carregar dados do perfil:', err);
         setError('Erro ao carregar dados do perfil');
         setLoading(false);
-      });
-  }, [user, token]);
+      }
+    };
+    fetchUser();
+  }, [isUserReady, userId, token]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,13 +64,14 @@ export const ProfilePage: React.FC = () => {
     setSaving(true);
     setError(null);
     try {
-      await fetch(`${API_BASE}/users/${user.id}`, {
+      const updateData = { ...form, id: form.id || user?.id || userId };
+      await fetch(`${API_BASE}/users/${updateData.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(updateData),
       });
       setSaving(false);
     } catch {
@@ -68,7 +82,13 @@ export const ProfilePage: React.FC = () => {
 
   if (loading) return <Spinner />;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
-  if (!form) return null;
+  if (!userId) return <p className="text-center">Nenhum usuário logado.</p>;
+  if (!form) return (
+    <div className="max-w-xl mx-auto bg-white p-8 rounded shadow">
+      <h1 className="text-2xl font-bold mb-6">Meu Perfil</h1>
+      <p className="text-center">Carregando dados do perfil...</p>
+    </div>
+  );
 
   return (
     <div className="max-w-xl mx-auto bg-white p-8 rounded shadow">

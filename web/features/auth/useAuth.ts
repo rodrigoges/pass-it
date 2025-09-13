@@ -6,16 +6,17 @@ import { LoginResponse, User } from '../../api/types';
 import { useAuthStore } from '../../store/authStore';
 import { LoginFormData, RegisterFormData } from './authSchemas';
 
-// Login Mutation
 const loginUser = async (credentials: LoginFormData): Promise<LoginResponse> => {
-  const { data: token } = await apiClient.post<string>('/auth/login', credentials);
-
-  // Após login, buscar usuário real pelo email
-  const { getUserByEmail } = await import('./getUserByEmail');
-  const user = await getUserByEmail(credentials.email);
+  const { data } = await apiClient.post<{ token: string; userId: string }>('/auth/login', credentials);
+  const { useAuthStore } = await import('../../store/authStore');
+  useAuthStore.getState().setAuth(data.token, null);
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  const { getUserById } = await import('./getUserById');
+  const user = await getUserById(data.userId);
+  useAuthStore.getState().setAuth(data.token, user);
 
   return {
-    token,
+    token: data.token,
     user
   };
 };
@@ -31,7 +32,6 @@ export const useLogin = () => {
       navigate('/dashboard');
     },
     onError: (error) => {
-      // Here you would typically show a toast notification
       console.error('Login failed:', error);
       alert('Login falhou. Verifique suas credenciais.');
     },
@@ -39,7 +39,6 @@ export const useLogin = () => {
 };
 
 
-// Register Mutation
 const registerUser = async (userData: RegisterFormData): Promise<User> => {
     const { data } = await apiClient.post<User>('/users', userData);
     return data;

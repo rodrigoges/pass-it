@@ -13,7 +13,6 @@ const ItemDetailPage: React.FC = () => {
     const { data: item, isLoading, isError } = useItem(itemId || '');
     const { user } = useAuthStore();
 
-    // Verificar se o itemId é válido
     if (!itemId || itemId === 'undefined') {
         return (
             <div className="text-center py-10">
@@ -46,7 +45,6 @@ const ItemDetailPage: React.FC = () => {
     if (isLoading) return <Spinner />;
     if (isError || !item) return <p className="text-center text-red-500">Item não encontrado.</p>;
 
-    // Preparar dados iniciais para o formulário
     const initialData = {
         title: item.title,
         description: item.description,

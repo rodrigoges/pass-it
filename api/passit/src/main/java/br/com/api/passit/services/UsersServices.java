@@ -74,6 +74,7 @@ public class UsersServices {
         var userEntity = usersMapper.toEntity(request);
         var address = addressesMapper.toEntity(request.address());
         userEntity.setUserId(userId);
+        userEntity.setPassword(passwordEncoder.encode(authUserById.get().getPassword()));
         userEntity.setAddress(address);
         var user = usersRepository.save(userEntity);
         return usersMapper.toResponse(user);
